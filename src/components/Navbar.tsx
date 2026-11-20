@@ -1,26 +1,23 @@
 import { Link, NavLink } from "react-router-dom";
 import type { Theme } from "../App";
-import type { CartItem } from "../types/cart";
+import { useCartStore } from "../store/cartStore";
 
 export type NavbarProps = {
     theme: Theme;
     favourites: number[];
-    carts: CartItem[];
     onThemeChange: (theme: Theme) => void;
     isClose: boolean;
     onClose: (isClose: boolean) => void;
-
-
 };
 
-export default function Navbar({ favourites, theme, onThemeChange, carts, onClose, isClose, }: NavbarProps) {
+export default function Navbar({ favourites, theme, onThemeChange,  onClose, isClose }: NavbarProps) {
+    const carts = useCartStore((state) => state.items);
     function toggleTheme() {
         onThemeChange(theme === "dark" ? "light" : "dark");
     }
     function toClose() {
         onClose(isClose ? false : true);
     }
-
     const currentTotalCart = carts.reduce((acc, curr) => acc + curr.quantity, 0);
     const navStyle = " inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium text-gray-600  hover:text-emerald-700 aria-[current=page]:bg-emerald-50 aria-[current=page]:text-emerald-900 aria-[current=page]:font-semibold transition-colors dark:aria-[current=page]:bg-emerald-900/35 dark:aria-[current=page]:text-emerald-100";
     

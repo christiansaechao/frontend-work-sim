@@ -1,22 +1,20 @@
 import EmptyCart from "./EmptyCart";
 import CurrentCartItem from './currentCartItem';
 import type { CartItem } from "../types/cart";
+import { useCartStore } from "../store/cartStore";
 type CartPanelProps = {
     isClose: boolean;
     itemCount: number;
     onClose: (isClose: boolean) => void;
     carts: CartItem[];
-    handleAddToCart: (productID: number) => void;
-        removeOneFromCart: (productID: number) => void;
-    removeCompletelyFromCart: (productID: number) => void;
 
 
 }
-export default function CartPanel({ itemCount, onClose, isClose, carts, handleAddToCart,removeCompletelyFromCart, removeOneFromCart }: CartPanelProps) {
+export default function CartPanel({ itemCount, onClose, isClose, }: CartPanelProps) {
     function toClose() {
         onClose(isClose ? false : true);
     }
-
+    const carts = useCartStore((state) => state.items);
     return (
         <>
             <div className="fixed inset-0 z-40 bg-black/40" />
@@ -53,12 +51,8 @@ export default function CartPanel({ itemCount, onClose, isClose, carts, handleAd
                         carts.map((cart) => (
                             <CurrentCartItem
                                 key={cart.product.id}
-                                handleAddToCart={handleAddToCart}
-                                carts={carts}
                                 product={cart.product}
                                 quantity={cart.quantity}
-                                removeCompletelyFromCart={removeCompletelyFromCart}
-                                removeOneFromCart={removeOneFromCart}
                             />
                         ))
                     )}

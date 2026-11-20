@@ -2,20 +2,21 @@ import { Link } from "react-router-dom";
 import type { Product } from "../types/product";
 import '../styles/style.css';
 import { useParams } from "react-router";
-import type { CartItem } from "../types/cart";
+import { useCartStore } from "../store/cartStore";
 
 type ProductDetailPageProps = {
     products: Product[];
     favorites: number[];
     onToggleFavorite: (productID: number) => void;
-    handleAddToCart: (productID: number) => void;
-    carts: CartItem[];
     loading: boolean;
 }
 
 
-export default function ProductDetailPage({ products, favorites, onToggleFavorite, handleAddToCart, carts, loading }: ProductDetailPageProps) {
+export default function ProductDetailPage({ products, favorites, onToggleFavorite, loading }: ProductDetailPageProps) {
     let params = useParams();
+    const carts = useCartStore((state) => state.items);
+    const handleAddToCart = useCartStore((state) => state.addToCart);
+
     const productID = params.id;
     const product = products.find((product) => String(product.id) === productID);
     const backLink = (
@@ -70,7 +71,7 @@ export default function ProductDetailPage({ products, favorites, onToggleFavorit
                     <div className="product-actions">
                         <button
                             className="add-to-cart"
-                            onClick={() => handleAddToCart(product.id)}
+                            onClick={() => handleAddToCart(product)}
                             disabled={product.stock === 0 || atLimit}
                         >
                             {atLimit ? 'Maximum quantity reached' : product.stock === 0 ? 'Out of stock' : 'Add to cart'}

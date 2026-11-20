@@ -1,16 +1,17 @@
-import type { CartItem } from "../types/cart";
+import { useCartStore } from "../store/cartStore";
 import type { Product } from "../types/product"
 
 type CartType = {
     product: Product;
     quantity: number;
-    handleAddToCart: (productID: number) => void;
-    removeOneFromCart: (productID: number) => void;
-    removeCompletelyFromCart: (productID: number) => void;
-    carts : CartItem[]
 }
-export default function CurrentCartItem({ product, quantity, handleAddToCart,removeOneFromCart,removeCompletelyFromCart, carts}: CartType) {
-            const currentQuantity = carts.find(
+export default function CurrentCartItem({ product, quantity}: CartType) {
+    const carts = useCartStore((state) => state.items);    
+    const handleAddToCart = useCartStore((state) => state.addToCart);
+    const removeCompletelyFromCart = useCartStore((state) => state.removeFromCart);
+    const removeOneFromCart = useCartStore((state) => state.decrease);
+
+    const currentQuantity = carts.find(
                     (item) => item.product.id === product.id
                 )?.quantity ?? 0;
             const isMaxInCart=currentQuantity >= product.stock;
@@ -50,7 +51,7 @@ export default function CurrentCartItem({ product, quantity, handleAddToCart,rem
                     <button
                         type="button"
                         disabled = {isMaxInCart}
-                        onClick={() => handleAddToCart(product.id)}
+                        onClick={() => handleAddToCart(product)}
                         className="w-9 h-8 flex 
                         items-center justify-center text-gray-300 
                           disabled:bg-slate-200

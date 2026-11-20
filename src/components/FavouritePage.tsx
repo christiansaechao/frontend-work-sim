@@ -1,24 +1,20 @@
 import ProductGrid from "../components/ProductGrid";
-import type { CartItem } from "../types/cart";
+import { useCartStore } from "../store/cartStore";
 import type { Product } from "../types/product";
 
 type FavoritesPageProps = {
   products: Product[];
   favorites: number[];
-  carts: CartItem[];
-  onAddToCart: (productId: number) => void;
   onToggleFavorite: (productId: number) => void;
 };
 
 export default function FavoritesPage({
   products,
   favorites,
-  carts,
-  onAddToCart,
-  onToggleFavorite,
+  onToggleFavorite
 }: FavoritesPageProps) {
   const favoriteProducts = products.filter((product) => favorites.includes(product.id));
-
+    const carts = useCartStore((state) => state.items);
   return (
     <main className="flex-1 bg-[#f5f7fa] px-5 py-10 transition-colors dark:bg-slate-950 sm:px-9">
       <div className="mx-auto max-w-7xl">
@@ -39,7 +35,6 @@ export default function FavoritesPage({
             products={favoriteProducts}
             carts={carts}
             favourites={favorites}
-            handleAddToCart={onAddToCart}
             onToggleFavorite={onToggleFavorite}
           />
         )}

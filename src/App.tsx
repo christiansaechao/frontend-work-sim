@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
-import groupByCategory from "./utils/groupByCategory";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import type { CartItem } from "./types/cart";
 export type Theme = "dark" | "light";
-import CartPanel from "./components/CartPanel";
 import type { Product } from "./types/product";
-import PromoBanner from "./components/PromoBanner";
 
 import { Routes, Route, useLocation } from "react-router-dom";
 import FavoritesPage from "./components/FavouritePage";
@@ -100,48 +95,26 @@ export default function App() {
     }
     // const cPanel = (<CartPanel handleAddToCart={handleAddToCart} removeCompletelyFromCart={removeCompletelyFromCart}
     //     removeOneFromCart={removeOneFromCart} carts={carts} isClose={close} onClose={setClose} itemCount={carts.length} />);
-    function handleAddToCart(productID: number) {
-        setCarts((cart) => {
-            const currentCart = cart.find((item) => item.product.id === productID);
-            if (currentCart === undefined) {
-                const currentProduct = products.find((item) => item.id === productID);
-                if (!currentProduct) return cart;
-                const newCart: CartItem = { product: currentProduct, quantity: 1 };
-                return [...cart, newCart];
-            }
-            return cart.map((item) => item.product.id === productID ? { ...item, quantity: item.quantity + 1 } : item);
+    // function handleAddToCart(productID: number) {
+    //     setCarts((cart) => {
+    //         const currentCart = cart.find((item) => item.product.id === productID);
+    //         if (currentCart === undefined) {
+    //             const currentProduct = products.find((item) => item.id === productID);
+    //             if (!currentProduct) return cart;
+    //             const newCart: CartItem = { product: currentProduct, quantity: 1 };
+    //             return [...cart, newCart];
+    //         }
+    //         return cart.map((item) => item.product.id === productID ? { ...item, quantity: item.quantity + 1 } : item);
 
-        })
-    }
-    function removeCompletelyFromCart(productID: number) {
-        setCarts((cart) => {
-            return cart.filter((item) => item.product.id !== productID);
-
-        })
-
-    }
-    function removeOneFromCart(productID: number) {
-        setCarts((cart) => {
-            const currentCart = cart.find((item) => item.product.id === productID);
-            if (currentCart === undefined) {
-                return cart;
-            } else {
-                if (currentCart.quantity <= 1) {
-                    return cart.filter((item) => item.product.id !== productID);
-                }
-            }
-            return cart.map((item) => item.product.id === productID ? { ...item, quantity: item.quantity - 1 } : item);
-        })
-
-    }
-    const currentPromoBanner = <PromoBanner message={messages[index]} handleClear={closeBanner} />;
+    //     })
+    // }
     const currentLocation = useLocation();
     return (
         <div className={`${theme === "dark" ? "dark" : ""} min-h-screen flex flex-col`}>
 
             <Routes>
                 <Route element = {<Layout theme={theme} favourites={favorites} isClose={close} onClose={setClose} onThemeChange={setTheme} 
-                carts={carts} message={messages[index]} handleClear={closeBanner} isVisible={isVisible} />}>
+                message={messages[index]} handleClear={closeBanner} isVisible={isVisible} />}>
                     <Route
                         path="/"
                         element={
@@ -151,7 +124,6 @@ export default function App() {
                                 onSearchChange={setSearch}
                                 carts={carts}
                                 favorites={favorites}
-                                onAddToCart={handleAddToCart}
                                 onToggleFavorite={handleToggleFavourites}
                                 loading={loading}
                                 error={error}
@@ -166,8 +138,6 @@ export default function App() {
                             <FavoritesPage
                                 products={products}
                                 favorites={favorites}
-                                carts={carts}
-                                onAddToCart={handleAddToCart}
                                 onToggleFavorite={handleToggleFavourites}
                             />
                         }
@@ -175,21 +145,14 @@ export default function App() {
                     <Route path="/products/:id" element={
                         <ProductDetailPage products={products}
                             favorites={favorites}
-                            handleAddToCart={handleAddToCart}
                             onToggleFavorite={handleToggleFavourites}
-                            carts={carts}
                             loading={loading}
                         />} />
 
                     <Route
                         path="/cart"
                         element={
-                            <CartPage
-                                carts={carts}
-                                onAddToCart={handleAddToCart}
-                                onRemoveOne={removeOneFromCart}
-                                onRemoveAll={removeCompletelyFromCart}
-                            />
+                            <CartPage />
                         }
                     />
                     <Route path="*" element={<NotFoundPage pathname={currentLocation.pathname} />}></Route>

@@ -8,6 +8,7 @@ import ProductSkeleton from "../components/ProductSkeleton";
 import ErrorState from "../components/Error";
 import type { CartItem } from "../types/cart";
 import type { Product } from "../types/product";
+import { useCartStore } from "../store/cartStore";
 
 type HomePageProps = {
     products: Product[];
@@ -15,7 +16,6 @@ type HomePageProps = {
     onSearchChange: (value: string) => void;
     carts: CartItem[];
     favorites: number[];
-    onAddToCart: (productId: number) => void;
     onToggleFavorite: (productId: number) => void;
     loading: boolean;
     error: string | null;
@@ -26,14 +26,13 @@ export default function HomePage({
     products,
     search,
     onSearchChange,
-    carts,
     favorites,
-    onAddToCart,
     onToggleFavorite,
     loading,
     error,
     onRetry,
 }: HomePageProps) {
+    const carts = useCartStore((state) => state.items);
     const normalizedSearch = search.trim().toLowerCase();
     const filteredProducts = products.filter((product) =>
         product.title.toLowerCase().includes(normalizedSearch)
@@ -62,7 +61,6 @@ export default function HomePage({
                     ) : isSearching ? (
                         <ProductGrid
                             carts={carts}
-                            handleAddToCart={onAddToCart}
                             favourites={favorites}
                             onToggleFavorite={onToggleFavorite}
                             products={filteredProducts}
@@ -75,7 +73,6 @@ export default function HomePage({
                                     title={`${category} (${categoryProducts.length})`}
                                     products={categoryProducts}
                                     carts={carts}
-                                    handleAddToCart={onAddToCart}
                                     favourites={favorites}
                                     onToggleFavorite={onToggleFavorite}
                                 />

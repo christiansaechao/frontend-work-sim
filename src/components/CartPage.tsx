@@ -1,19 +1,11 @@
-import type { CartItem } from "../types/cart";
+import { useCartStore } from "../store/cartStore";
 
-type CartPageProps = {
-  carts: CartItem[];
-  onAddToCart: (productId: number) => void;
-  onRemoveOne: (productId: number) => void;
-  onRemoveAll: (productId: number) => void;
-};
-
-export default function CartPage({
-  carts,
-  onAddToCart,
-  onRemoveOne,
-  onRemoveAll,
-}: CartPageProps) {
-  const itemCount = carts.reduce((total, item) => total + item.quantity, 0);
+export default function CartPage() {
+    const carts = useCartStore((state) => state.items);
+    const onRemoveAll = useCartStore((state) => state.removeFromCart);
+    const onRemoveOne = useCartStore((state) => state.decrease);
+    const itemCount = carts.reduce((total, item) => total + item.quantity, 0);
+    const onAddToCart = useCartStore((state) => state.addToCart)
   const subtotal = carts.reduce(
     (total, item) => total + item.product.price * item.quantity,
     0
@@ -80,7 +72,7 @@ export default function CartPage({
                           <button
                             type="button"
                             aria-label={`Add one ${product.title}`}
-                            onClick={() => onAddToCart(product.id)}
+                            onClick={() => onAddToCart(product)}
                             disabled={maxReached}
                             className="px-3 py-1 text-slate-900 hover:bg-slate-100 disabled:cursor-not-allowed disabled:text-slate-300 dark:text-white dark:hover:bg-slate-800 dark:disabled:text-slate-600"
                           >
