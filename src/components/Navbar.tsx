@@ -1,22 +1,21 @@
 import { Link, NavLink } from "react-router-dom";
 import type { Theme } from "../App";
 import { useCartStore } from "../store/cartStore";
+import { useThemeStore } from "../store/themeStore";
+import { useFavoriteStore } from "../store/favoritesStore";
 
 export type NavbarProps = {
-    theme: Theme;
-    favourites: number[];
-    onThemeChange: (theme: Theme) => void;
     isClose: boolean;
     onClose: (isClose: boolean) => void;
 };
 
-export default function Navbar({ favourites, theme, onThemeChange,  onClose, isClose }: NavbarProps) {
+export default function Navbar({}: NavbarProps) {
     const carts = useCartStore((state) => state.items);
-    function toggleTheme() {
-        onThemeChange(theme === "dark" ? "light" : "dark");
-    }
-    function toClose() {
-        onClose(isClose ? false : true);
+    const favourites = useFavoriteStore((state) => state.ids);
+    const onThemeChange = useThemeStore((state) => state.toggleTheme);
+    const theme = useThemeStore((state) => state.theme);
+    function toggleTheme(theme: Theme){
+        onThemeChange(theme);
     }
     const currentTotalCart = carts.reduce((acc, curr) => acc + curr.quantity, 0);
     const navStyle = " inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium text-gray-600  hover:text-emerald-700 aria-[current=page]:bg-emerald-50 aria-[current=page]:text-emerald-900 aria-[current=page]:font-semibold transition-colors dark:aria-[current=page]:bg-emerald-900/35 dark:aria-[current=page]:text-emerald-100";
@@ -62,7 +61,7 @@ export default function Navbar({ favourites, theme, onThemeChange,  onClose, isC
 
                     <button
                         type="button"
-                        onClick={toggleTheme}
+                        onClick={() => toggleTheme(theme)}
                         className="rounded-lg border border-slate-200 p-2"
                     >
                         {theme === "dark" ? "☀️" : "🌙"}

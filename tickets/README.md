@@ -50,3 +50,12 @@ In the backend unit you'll build your own products API. Your field names will be
 different from DummyJSON's (e.g. `name` instead of `title`, `image_url` instead of `thumbnail`).
 That's normal on real teams. When you connect this storefront to your own backend, you'll
 update the `Product` type and let TypeScript point you to every place that needs to change.
+# SummitGear Market
+
+## Project Description
+## Features
+## Tech Stack
+## Screenshots
+## Getting Started
+## Running Locally
+## Live Demo

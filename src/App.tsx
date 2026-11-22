@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import type { CartItem } from "./types/cart";
 export type Theme = "dark" | "light";
 import type { Product } from "./types/product";
-
 import { Routes, Route, useLocation } from "react-router-dom";
 import FavoritesPage from "./components/FavouritePage";
 import CartPage from "./components/CartPage";
@@ -10,6 +8,12 @@ import HomePage from "./components/HomePage";
 import ProductDetailPage from "./components/ProductDetailPage";
 import NotFoundPage from "./components/NotFoundPage";
 import Layout from "./components/Layout";
+import { useCartStore } from "./store/cartStore";
+import { useThemeStore } from "./store/themeStore";
+import Checkout from "./components/Checkout";
+import Payment from "./components/Payment";
+import Review from "./components/Review";
+import OrderConfirmation from "./components/OrderConfirmed";
 type ProductsResponse = {
     products: Product[];
     total: number;
@@ -31,18 +35,15 @@ export default function App() {
     const [error, setError] = useState<string | null>(null);
     // below is anything related to the normal webpage after sucessfully reached
     const [search, setSearch] = useState("");
-    const [theme, setTheme] = useState<Theme>("light");
-    const [favorites, setFavorites] = useState<number[]>([]);
-    const [carts, setCarts] = useState<CartItem[]>([]);
     const [close, setClose] = useState<boolean>(true);
     const [index, setIndex] = useState(0);
     const [isVisible, setVisible] = useState(true);
-
+    const carts = useCartStore((state) => state.items);
     const cartCount = carts.reduce(
         (total, item) => total + item.quantity,
         0
     );
-
+    const theme = useThemeStore((state) => state.theme);
     useEffect(() => {
         document.title = cartCount === 0 ? `SummitGear Market` : `SummitGear Market (${carts.length})`;
     }, [cartCount])
@@ -62,7 +63,6 @@ export default function App() {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
                 const data: ProductsResponse = await response.json();
                 setProducts(data.products);
             } catch (err) {
@@ -71,7 +71,6 @@ export default function App() {
                 } else {
                     setError('An unexpected error occurred');
                 }
-
             } finally {
                 setLoading(false);
             }
@@ -79,42 +78,18 @@ export default function App() {
         fetchProducts();
     }, []);
     function closeBanner() {
-        setVisible((prev) => false);
+        setVisible(false);
     }
     function handleRetry() {
         window.location.reload()
     }
-    function handleToggleFavourites(productId: number) {
-        setFavorites((prevIds) => {
-            if (prevIds.includes(productId)) {
-                return prevIds.filter((id) => id !== productId)
-            } else {
-                return [...prevIds, productId]
-            }
-        })
-    }
-    // const cPanel = (<CartPanel handleAddToCart={handleAddToCart} removeCompletelyFromCart={removeCompletelyFromCart}
-    //     removeOneFromCart={removeOneFromCart} carts={carts} isClose={close} onClose={setClose} itemCount={carts.length} />);
-    // function handleAddToCart(productID: number) {
-    //     setCarts((cart) => {
-    //         const currentCart = cart.find((item) => item.product.id === productID);
-    //         if (currentCart === undefined) {
-    //             const currentProduct = products.find((item) => item.id === productID);
-    //             if (!currentProduct) return cart;
-    //             const newCart: CartItem = { product: currentProduct, quantity: 1 };
-    //             return [...cart, newCart];
-    //         }
-    //         return cart.map((item) => item.product.id === productID ? { ...item, quantity: item.quantity + 1 } : item);
-
-    //     })
-    // }
     const currentLocation = useLocation();
     return (
         <div className={`${theme === "dark" ? "dark" : ""} min-h-screen flex flex-col`}>
 
             <Routes>
-                <Route element = {<Layout theme={theme} favourites={favorites} isClose={close} onClose={setClose} onThemeChange={setTheme} 
-                message={messages[index]} handleClear={closeBanner} isVisible={isVisible} />}>
+                <Route element={<Layout isClose={close} onClose={setClose}
+                    message={messages[index]} handleClear={closeBanner} isVisible={isVisible} />}>
                     <Route
                         path="/"
                         element={
@@ -122,9 +97,6 @@ export default function App() {
                                 products={products}
                                 search={search}
                                 onSearchChange={setSearch}
-                                carts={carts}
-                                favorites={favorites}
-                                onToggleFavorite={handleToggleFavourites}
                                 loading={loading}
                                 error={error}
                                 onRetry={handleRetry}
@@ -137,15 +109,11 @@ export default function App() {
                         element={
                             <FavoritesPage
                                 products={products}
-                                favorites={favorites}
-                                onToggleFavorite={handleToggleFavourites}
                             />
                         }
                     />
                     <Route path="/products/:id" element={
                         <ProductDetailPage products={products}
-                            favorites={favorites}
-                            onToggleFavorite={handleToggleFavourites}
                             loading={loading}
                         />} />
 
@@ -155,8 +123,12 @@ export default function App() {
                             <CartPage />
                         }
                     />
+                    <Route path="/checkout" element = { <Checkout />}></Route>
+                    <Route path="/payment" element = {<Payment />}></Route>
+                    <Route path="/review" element = {<Review />}></Route>
+                    <Route path="/order-confirmation" element = {<OrderConfirmation />}> </Route>
                     <Route path="*" element={<NotFoundPage pathname={currentLocation.pathname} />}></Route>
-
+                    
                 </Route>
             </Routes>
 

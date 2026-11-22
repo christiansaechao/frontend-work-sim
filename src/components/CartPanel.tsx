@@ -7,8 +7,6 @@ type CartPanelProps = {
     itemCount: number;
     onClose: (isClose: boolean) => void;
     carts: CartItem[];
-
-
 }
 export default function CartPanel({ itemCount, onClose, isClose, }: CartPanelProps) {
     function toClose() {

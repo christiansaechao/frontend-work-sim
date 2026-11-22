@@ -16,11 +16,7 @@ export default function SuggestProductForm() {
         category: '',
         reason: ''
     }
-    const [formData, setFormData] = useState({
-        productName: '',
-        category: '',
-        reason: ''
-    });
+    const [formData, setFormData] = useState(initialState);
     const fieldLabels: Record<keyof typeof formData, string> = {
         productName: 'Product Name',
         category: 'Category',
@@ -42,7 +38,7 @@ export default function SuggestProductForm() {
             }
         });
         setError(newErrors);
-        if (newErrors.length == 0) return;
+        if (newErrors.length !== 0) return;
         setCurrentSuggestions((prev) => [...prev, formData])
         setFormData(initialState)
     }
@@ -95,7 +91,8 @@ export default function SuggestProductForm() {
                             placeholder="e.g. Camping tent"
                             value={formData.productName}
                             onChange={handleChange}
-                            className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-600 
+                            className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none 
+                                transition placeholder:text-slate-400 focus:border-emerald-600 
                                 focus:ring-2 focus:ring-emerald-100 ${error.some((err) => err.includes("Product Name"))
                                     ? "border-red-400 bg-red-50"
                                     : "border-slate-300"

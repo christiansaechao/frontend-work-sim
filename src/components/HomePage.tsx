@@ -6,17 +6,12 @@ import ProductSection from "../components/ProductSection";
 import EmptyState from "../components/EmptyState";
 import ProductSkeleton from "../components/ProductSkeleton";
 import ErrorState from "../components/Error";
-import type { CartItem } from "../types/cart";
 import type { Product } from "../types/product";
-import { useCartStore } from "../store/cartStore";
 
 type HomePageProps = {
     products: Product[];
     search: string;
     onSearchChange: (value: string) => void;
-    carts: CartItem[];
-    favorites: number[];
-    onToggleFavorite: (productId: number) => void;
     loading: boolean;
     error: string | null;
     onRetry: () => void;
@@ -26,13 +21,10 @@ export default function HomePage({
     products,
     search,
     onSearchChange,
-    favorites,
-    onToggleFavorite,
     loading,
     error,
     onRetry,
 }: HomePageProps) {
-    const carts = useCartStore((state) => state.items);
     const normalizedSearch = search.trim().toLowerCase();
     const filteredProducts = products.filter((product) =>
         product.title.toLowerCase().includes(normalizedSearch)
@@ -60,9 +52,6 @@ export default function HomePage({
                         <EmptyState title="No products found" query={search} />
                     ) : isSearching ? (
                         <ProductGrid
-                            carts={carts}
-                            favourites={favorites}
-                            onToggleFavorite={onToggleFavorite}
                             products={filteredProducts}
                         />
                     ) : (
@@ -72,9 +61,6 @@ export default function HomePage({
                                     key={category}
                                     title={`${category} (${categoryProducts.length})`}
                                     products={categoryProducts}
-                                    carts={carts}
-                                    favourites={favorites}
-                                    onToggleFavorite={onToggleFavorite}
                                 />
                             ))}
                         </div>

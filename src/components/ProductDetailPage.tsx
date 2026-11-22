@@ -3,16 +3,15 @@ import type { Product } from "../types/product";
 import '../styles/style.css';
 import { useParams } from "react-router";
 import { useCartStore } from "../store/cartStore";
+import { useFavoriteStore } from "../store/favoritesStore";
 
 type ProductDetailPageProps = {
     products: Product[];
-    favorites: number[];
-    onToggleFavorite: (productID: number) => void;
     loading: boolean;
 }
 
 
-export default function ProductDetailPage({ products, favorites, onToggleFavorite, loading }: ProductDetailPageProps) {
+export default function ProductDetailPage({ products,  loading }: ProductDetailPageProps) {
     let params = useParams();
     const carts = useCartStore((state) => state.items);
     const handleAddToCart = useCartStore((state) => state.addToCart);
@@ -22,6 +21,8 @@ export default function ProductDetailPage({ products, favorites, onToggleFavorit
     const backLink = (
         <Link type="button" to="/" className="mb-5 font-bold text-emerald-900 hover:underline">← Back to shop</Link>
     );
+    const favorites = useFavoriteStore((state) => state.ids)
+    const onToggleFavorite = useFavoriteStore((state) => state.toggleFavorite);
     const isFavorite = favorites.some((favorite) => String(favorite) === productID);
     const cart = carts.find((cart) => String(cart.product.id) === productID)
     const cartQuantity = cart ? cart.quantity : 0;

@@ -1,14 +1,13 @@
 import { useCartStore } from "../store/cartStore";
+import { useFavoriteStore } from "../store/favoritesStore";
 import type { Product } from "../types/product";
 import { Link } from "react-router-dom";
 type ProductCardProps = {
     product: Product;
-    isFavorite: boolean;
     isMaxInCart: boolean;
-    onToggleFavorite: (productID: number) => void;
 };
 
-export default function ProductCard({ product, isFavorite, isMaxInCart, onToggleFavorite }: ProductCardProps) {
+export default function ProductCard({ product,  isMaxInCart}: ProductCardProps) {
     const handleAddToCart = useCartStore((state) => state.addToCart)
     function handleToggle() {
         onToggleFavorite(product.id);
@@ -16,6 +15,9 @@ export default function ProductCard({ product, isFavorite, isMaxInCart, onToggle
     function handleCart(){
         handleAddToCart(product);
     }
+    const favourites= useFavoriteStore((state) => state.ids)
+    const isFavorite = favourites.includes(product.id);
+    const onToggleFavorite = useFavoriteStore((state) => state.toggleFavorite)
 
     return (
         <article className="flex h-full flex-col overflow-hidden rounded-[15px] border border-[#e0e7f0] bg-white shadow-[0_2px_3px_rgba(15,23,42,0.06)] transition-colors dark:border-slate-700 dark:bg-slate-900 dark:shadow-[0_2px_12px_rgba(0,0,0,0.22)]">
